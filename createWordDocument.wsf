@@ -1,0 +1,38 @@
+<job>
+<script language="VBScript" src="VBS-MS-Office-App-Creator/create-MS-Office-app.vbs" />
+<script language="VBScript">
+'
+'  V.1
+'
+   option explicit
+
+   dim app
+   dim doc
+
+   set doc = createOfficeApp("word", currentDir() & "swapKeys.docm")
+   if doc is nothing then ' {
+      wscript.echo("Could not create word document")
+      wscript.quit(-1)
+   end if ' }
+
+   set app = doc.application
+
+   insertModule app, currentDir() & "SetWindowsHookEx/VirtualKeys.vb"         , "VirtualKeys"            , 1
+   insertModule app, currentDir() & "SetWindowsHookEx/WindowsHooksWinAPI.vb"  , "WindowsHooksWinAPI"     , 1
+   insertModule app, currentDir() & "SetWindowsHookEx/IKeyboardEvent.cls"     , "IKeyboardEvent"         , 2
+   insertModule app, currentDir() & "SetWindowsHookEx/WindowsHooks.vb"        , "WindowsHooks"           , 1
+
+   insertModule app, currentDir() & "IKeyboardEvent_SwapKeys.cls"             , "IKeyboardEvent_SwapKeys", 2
+   insertModule app, currentDir() & "SwapKeys.vb"                             , "SwapKeys"               , 1
+
+   doc.save
+
+   if not compileApp(app) then ' {
+      wscript.echo "Compilation error"
+      wscript.quit(-1)
+   end if ' }
+
+   app.run "startSwapKeys"
+
+</script>
+</job>
